@@ -3,38 +3,48 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 class Square extends React.Component {
-    // add a constructor to the class to initialize the state:
-    constructor(props) {
-        // In JavaScript classes, you need to always call super when defining the constructor of a subclass.
-        // All React component classes that have a constructor should start with a super(props) call.
-        super(props);
-        this.state = {
-            value: null,
-        };
-    }
-
     render() {
         return (
-            // <button className="square" onClick={function() { console.log('click'); }}>
-            // To save typing and avoid the confusing behavior of this,
-            // we will use the arrow function syntax for event handlers:
-            // <button className="square" onClick={() => console.log('click')}>
             <button
                 className="square"
-                onClick={() => this.setState({value: 'X'})}
+                onClick={() => this.props.onClick()}
             >
-                {/* “passed a prop” from a parent Board component to a child Square component.
-                You should see a number in each square in the rendered output: 0-8 */}
-                {/* {this.props.value} */}
-                {this.state.value}
+                {this.props.value}
             </button>
         );
     }
 }
 
 class Board extends React.Component {
+    // Add a constructor to the Board and set the Board’s initial state
+    // to contain an array of 9 nulls corresponding to the 9 squares:
+    constructor(props) {
+        // In JavaScript classes, you need to always call super when defining the constructor of a subclass.
+        // All React component classes that have a constructor should start with a super(props) call.
+        super(props);
+        this.state = {
+            squares: Array(9).fill(null),
+        };
+    }
+
+    handleClick(i) {
+        // We call .slice() to create a copy of the squares array to modify
+        // instead of modifying the existing array.
+        const squares = this.state.squares.slice();
+        squares[i] = 'X';
+        this.setState({squares: squares});
+    }
+
     renderSquare(i) {
-        return <Square value={i} />;
+        // We split the returned element into multiple lines for readability,
+        // and added parentheses so that JavaScript doesn’t insert a semicolon
+        // after return and break our code.
+        return (
+            <Square
+                value={this.state.squares[i]}
+                onClick={() => this.handleClick(i)}
+            />
+        );
     }
 
     render() {
