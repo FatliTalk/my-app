@@ -27,14 +27,13 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-    // Add a constructor to the Board and set the Board’s initial state
-    // to contain an array of 9 nulls corresponding to the 9 squares:
     constructor(props) {
         // In JavaScript classes, you need to always call super when defining the constructor of a subclass.
         // All React component classes that have a constructor should start with a super(props) call.
         super(props);
         this.state = {
             squares: Array(9).fill(null),
+            xIsNext: true,
         };
     }
 
@@ -42,8 +41,11 @@ class Board extends React.Component {
         // We call .slice() to create a copy of the squares array to modify
         // instead of modifying the existing array.
         const squares = this.state.squares.slice();
-        squares[i] = 'X';
-        this.setState({squares: squares});
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext
+        });
     }
 
     renderSquare(i) {
@@ -59,7 +61,7 @@ class Board extends React.Component {
     }
 
     render() {
-        const status = "Next player: X";
+        const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
         return (
             <div>
