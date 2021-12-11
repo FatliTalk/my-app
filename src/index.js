@@ -27,57 +27,21 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-    constructor(props) {
-        // In JavaScript classes, you need to always call super when defining the constructor of a subclass.
-        // All React component classes that have a constructor should start with a super(props) call.
-        super(props);
-        this.state = {
-            squares: Array(9).fill(null),
-            xIsNext: true,
-        };
-    }
-
-    handleClick(i) {
-        // We call .slice() to create a copy of the squares array to modify
-        // instead of modifying the existing array.
-        const squares = this.state.squares.slice();
-        //  to return early by ignoring a click if someone has won the game
-        // or if a Square is already filled.
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext
-        });
-    }
-
     renderSquare(i) {
         // We split the returned element into multiple lines for readability,
         // and added parentheses so that JavaScript doesn’t insert a semicolon
         // after return and break our code.
         return (
             <Square
-                value={this.state.squares[i]}
-                onClick={() => this.handleClick(i)}
+                value={this.props.squares[i]}
+                onClick={() => this.props.onClick(i)}
             />
         );
     }
 
     render() {
-        // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        const winner = calculateWinner(this.state.squares);
-        let status;
-        if (winner) {
-            status = 'Winner: ' + winner;
-        } else {
-            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        }
-
         return (
             <div>
-                <div className="status">{status}</div>
                 <div className="board-row">
                     {this.renderSquare(0)}
                     {this.renderSquare(1)}
@@ -99,14 +63,63 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+    constructor(props) {
+        // In JavaScript classes, you need to always call super when defining the constructor of a subclass.
+        // All React component classes that have a constructor should start with a super(props) call.
+        super(props);
+        this.state = {
+            history: [{
+                squares: Array(9).fill(null),
+            }],
+            xIsNext: true,
+        };
+    }
+
+    handleClick(i) {
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        // We call .slice() to create a copy of the squares array to modify
+        // instead of modifying the existing array.
+        const squares = current.squares.slice();
+        //  to return early by ignoring a click if someone has won the game
+        // or if a Square is already filled.
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            // Concatenate new history entries onto history.
+            // Unlike the array push() method you might be more familiar with,
+            // the concat() method doesn’t mutate the original array, so we prefer it.
+            history: history.concat([{
+                squares: squares,
+            }]),
+            xIsNext: !this.state.xIsNext
+        });
+    }
+
     render() {
+        // to use the most recent history entry to determine and display the game’s status:
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        const winner = calculateWinner(current.squares);
+        let status;
+        if (winner) {
+            status = 'Winner: ' + winner;
+        } else {
+            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
+
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board />
+                    <Board
+                        squares={current.squares}
+                        onClick={(i) => this.handleClick(i)}
+                    />
                 </div>
                 <div className="game-info">
-                    <div>{/* status */}</div>
+                    <div>{status}</div>
                     <ol>{/* TODO */}</ol>
                 </div>
             </div>
