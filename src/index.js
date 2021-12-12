@@ -71,12 +71,13 @@ class Game extends React.Component {
             history: [{
                 squares: Array(9).fill(null),
             }],
+            stepNumber: 0,
             xIsNext: true,
         };
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         // We call .slice() to create a copy of the squares array to modify
         // instead of modifying the existing array.
@@ -94,26 +95,38 @@ class Game extends React.Component {
             history: history.concat([{
                 squares: squares,
             }]),
-            xIsNext: !this.state.xIsNext
+            stepNumber: history.length,
+            xIsNext: !this.state.xIsNext,
+        });
+    }
+
+    jumpTo(step) {
+        // Notice in jumpTo method, we haven’t updated history property of the state.
+        // That is because state updates are merged or in more simple words
+        // React will update only the properties mentioned in setState method
+        // leaving the remaining state as that is.
+        this.setState({
+            stepNumber: step,
+            // Set xIsNext to true if the number that we’re changing stepNumber to is even.
+            xIsNext: (step % 2)  === 0,
         });
     }
 
     render() {
         // to use the most recent history entry to determine and display the game’s status:
         const history = this.state.history;
-        const current = history[history.length - 1];
+        const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
         // Map over the `history`.
-        // TODO:
-        // 1. step is not getting assigned to anything.
-        // 2. We haven't implemented the `jumpTo()` method yet.
         const moves = history.map((step, move) => {
             const desc = move ?
                 'Go to move #' + move :
                 'Go to game start';
             return (
-                <li>
+                // It’s strongly recommended that you assign proper keys
+                // whenever you build dynamic lists.
+                <li key={move}>
                     <button onClick={() => this.jumpTo(move)}>{desc}</button>
                 </li>
             );
