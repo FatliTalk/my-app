@@ -1,4 +1,9 @@
-# 1. Add `"homepage": ".",` to `package.json`
+# Deploy "tic-tac-toe game with React" to GitHub Pages
+
+Another deployment method:
+https://create-react-app.dev/docs/deployment/#github-pages
+
+### 1. Add `"homepage": ".",` to `package.json`
 
 ```json
 {
@@ -9,6 +14,10 @@
 }
 ```
 
-# 2. Run `npm run build`
+### 2. Run `npm run build`
 
-# 3. Git push -u origin gh-pages
+### 3. Git push -u origin gh-pages
+
+### 4. Visit GitHub page
+
+[yourusername].github.io/[yourreponame]/
